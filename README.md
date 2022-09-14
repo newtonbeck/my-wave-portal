@@ -13,3 +13,5 @@ npx hardhat node
 node scripts/sample-script.js
 npx hardhat help
 ```
+
+Contract deployed at 0x4f2bC0d2381Fb8194a7cD1018AaA143AFD7bF357 in goerli
