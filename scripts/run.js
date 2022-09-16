@@ -3,29 +3,29 @@ const { ethers } = require("hardhat");
 const main = async () => {
     const [owner, randomPerson] = await ethers.getSigners();
     const contractFactory = await ethers.getContractFactory("WavePortal");
-    const wavePortalContract = await contractFactory.deploy();
+    const wavePortalContract = await contractFactory.deploy({
+        value: ethers.utils.parseEther("0.1"),
+    });
 
     await wavePortalContract.deployed();
 
     console.log("Contract deployed to:", wavePortalContract.address);
     console.log("Contract deployed by:", owner.address);
 
-    let waveCount;
+    let contractBalance = await ethers.provider.getBalance(wavePortalContract.address);
+    console.log("Contract balance:", ethers.utils.formatEther(contractBalance));
 
-    waveCount = await wavePortalContract.getTotalWaves();
-    console.log("Total wave count before waving:", waveCount);
+    let randomPersonBalance = await ethers.provider.getBalance(randomPerson.address);
+    console.log("Random person balance:", ethers.utils.formatEther(randomPersonBalance));
 
-    const waveTransactionOne = await wavePortalContract.wave();
-    await waveTransactionOne.wait();
+    const waveTransaction = await wavePortalContract.connect(randomPerson).wave("Nice contract, congrats!");
+    await waveTransaction.wait();
 
-    const waveTransactionTwo = await wavePortalContract.connect(randomPerson).wave();
-    await waveTransactionTwo.wait();
+    contractBalance = await ethers.provider.getBalance(wavePortalContract.address);
+    console.log("Contract balance:", ethers.utils.formatEther(contractBalance));
 
-    waveCount = await wavePortalContract.getTotalWaves();
-    console.log("Total wave count after waving:", waveCount);
-
-    console.log(`Total waves of ${owner.address} is`, await wavePortalContract.getMyTotalWaves());
-    console.log(`Total waves of ${randomPerson.address} is`, await wavePortalContract.connect(randomPerson).getMyTotalWaves());
+    randomPersonBalance = await ethers.provider.getBalance(randomPerson.address);
+    console.log("Random person balance:", ethers.utils.formatEther(randomPersonBalance));
 };
 
 main()
