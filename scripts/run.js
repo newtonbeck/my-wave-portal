@@ -18,14 +18,17 @@ const main = async () => {
     let randomPersonBalance = await ethers.provider.getBalance(randomPerson.address);
     console.log("Random person balance:", ethers.utils.formatEther(randomPersonBalance));
 
-    const waveTransaction = await wavePortalContract.connect(randomPerson).wave("Nice contract, congrats!");
-    await waveTransaction.wait();
+    const waveTransactionOne = await wavePortalContract.connect(randomPerson).wave("Nice contract, congrats!");
+    await waveTransactionOne.wait();
 
     contractBalance = await ethers.provider.getBalance(wavePortalContract.address);
     console.log("Contract balance:", ethers.utils.formatEther(contractBalance));
 
     randomPersonBalance = await ethers.provider.getBalance(randomPerson.address);
     console.log("Random person balance:", ethers.utils.formatEther(randomPersonBalance));
+
+    const waveTransactionTwo = await wavePortalContract.connect(randomPerson).wave("Nice contract, congrats!");
+    await waveTransactionTwo.wait();
 };
 
 main()
