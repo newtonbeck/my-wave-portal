@@ -16,10 +16,14 @@ contract WavePortal {
 
     uint256 totalWaves;
 
+    uint256 private seed;
+
     Wave[] waves;
 
     constructor() payable {
         console.log("I am contract, smart contract");
+
+        seed = (block.timestamp + block.difficulty) % 100;
     }
 
     function wave(string memory _message) public {
@@ -28,16 +32,24 @@ contract WavePortal {
 
         waves.push(Wave(msg.sender, _message, block.timestamp));
 
+        seed = (block.timestamp + block.difficulty) % 100;
+
+        console.log("Random # generated:", seed);
+
+        if (seed < 50) {
+            console.log("%s won!", msg.sender);
+
+            uint256 totalPrize = 0.0001 ether;
+            require(
+                totalPrize <= address(this).balance,
+                "Trying to withdraw more money than the contract has."
+            );
+
+            (bool success, ) = (msg.sender).call{value: totalPrize}("");
+            require(success, "Failed to withdraw money from contract.");
+        }
+
         emit NewWave(msg.sender, block.timestamp, _message);
-
-        uint256 totalPrize = 0.0001 ether;
-        require(
-            totalPrize <= address(this).balance,
-            "Trying to withdraw more money than the contract has."
-        );
-
-        (bool success, ) = (msg.sender).call{value: totalPrize}("");
-        require(success, "Failed to withdraw money from contract.");
     }
 
     function getAllWaves() public view returns (Wave[] memory) {
